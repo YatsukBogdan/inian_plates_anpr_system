@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ProgressIndicator?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.TextFlow?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ch.makery.address.MainApp">
+      <ImageView layoutX="16.0" layoutY="17.0" fitHeight="365.0" fitWidth="337.0" pickOnBounds="true" preserveRatio="true" fx:id="car_image_view"/>
+      <Button layoutX="438.0" layoutY="261.0" mnemonicParsing="false" prefHeight="38.0" disable="true" fx:id="write_to_db" onAction="#writeToDatabase" prefWidth="115.0" text="Write to database" />
+      <TextField layoutX="421.0" layoutY="188.0" fx:id="number_text"/>
+      <Button layoutX="438.0" layoutY="120.0" mnemonicParsing="false" prefHeight="38.0" prefWidth="115.0" text="Proceed" disable="true" onAction="#proceedImage" fx:id="proceed_button"/>
+      <TextFlow layoutX="438.0" layoutY="310.0" prefHeight="38.0" prefWidth="115.0" fx:id="plate_not_found_text"/>
+      <Button layoutX="438.0" layoutY="62.0" mnemonicParsing="false" onAction="#openFileChooser" prefHeight="38.0" prefWidth="115.0" text="Open image..." />
+      <ProgressIndicator layoutX="382.0" layoutY="187.0" prefHeight="38.0" prefWidth="31.0" progress="0.0" fx:id="indicator" visible="false"/>
+      <ProgressIndicator layoutX="382.0" layoutY="257.0" prefHeight="38.0" prefWidth="31.0" progress="0.0" fx:id="indicator_db" visible="false"/>
+</AnchorPane>
