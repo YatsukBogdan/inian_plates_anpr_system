@@ -114,7 +114,6 @@ public class MainApp extends Application {
                 if (i == 1) {
                     String [] splited = s.split("\\s+");
                     number_text.setAlignment(Pos.BASELINE_CENTER);
-                    if (splited[2].compareTo("") == 0){}
                     number_text.setText(splited[2]);
                     break;
                 }
