@@ -2,6 +2,10 @@ package ch.makery.address;
 
 import javafx.event.ActionEvent;
 
+import java.awt.*;
+import java.awt.geom.AffineTransform;
+import java.awt.image.AffineTransformOp;
+import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.File;
 
@@ -23,10 +27,12 @@ import javafx.scene.text.TextFlow;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
+import javax.imageio.ImageIO;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
+
 
 public class MainApp extends Application {
 
@@ -103,21 +109,52 @@ public class MainApp extends Application {
     @FXML
     protected void proceedImage(ActionEvent event){
         try {
+            int tries = 0;
+            double radians = -0.35;
+
             indicator.visibleProperty().setValue(true);
             indicator.setProgress(-1.0f);
 
-            Process process = Runtime.getRuntime().exec("alpr -c in " + car_file.getAbsolutePath());
-            BufferedReader stdInput = new BufferedReader(new InputStreamReader(process.getInputStream()));
-            String s;
-            int i = 0;
-            while((s = stdInput.readLine()) != null){
-                if (i == 1) {
-                    String [] splited = s.split("\\s+");
-                    number_text.setAlignment(Pos.BASELINE_CENTER);
-                    number_text.setText(splited[2]);
-                    break;
+            File tmp_car_file = car_file;
+
+            while (tries < 6) {
+                Process process = Runtime.getRuntime().exec("alpr -c in " + tmp_car_file.getAbsolutePath());
+                BufferedReader stdInput = new BufferedReader(new InputStreamReader(process.getInputStream()));
+                String s;
+                int i = 0;
+                while ((s = stdInput.readLine()) != null) {
+                    tries++;
+                    System.out.print(s);
+                    if (s.compareTo("No license plates found.") == 0) {
+                        try {
+                            BufferedImage car_front = ImageIO.read(new File("D:/WebDevelopment/Freelancer/alpr_system/src/car_front.png"));
+                            BufferedImage number_image = ImageIO.read(new File(car_file.getAbsolutePath()));
+                            java.awt.Image number_image_scaled_image = number_image.getScaledInstance(150, -1, java.awt.Image.SCALE_FAST);
+                            BufferedImage number_image_scaled = convertToBufferedImage(number_image_scaled_image);
+                            Graphics g = car_front.getGraphics();
+
+                            AffineTransform transform = new AffineTransform();
+                            transform.rotate(radians, number_image_scaled.getWidth()/2, number_image_scaled.getHeight()/2);
+                            AffineTransformOp op = new AffineTransformOp(transform, AffineTransformOp.TYPE_BILINEAR);
+                            number_image_scaled = op.filter(number_image_scaled, null);
+
+                            g.drawImage(number_image_scaled, 122, 108, null);
+                            File outputfile = new File("insert_to_template.png");
+                            ImageIO.write(car_front, "png", outputfile);
+
+                            tmp_car_file = outputfile;
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    } else if (i == 1) {
+                        String[] splited = s.split("\\s+");
+                        number_text.setAlignment(Pos.BASELINE_CENTER);
+                        number_text.setText(splited[2]);
+                        break;
+                    }
+                    radians += 0.1745;
+                    i++;
                 }
-                i++;
             }
             indicator.setProgress(1.0f);
             proceed_button.setDisable(true);
@@ -126,6 +163,17 @@ public class MainApp extends Application {
         catch (IOException e){
             e.printStackTrace();
         }
+    }
+
+    public static BufferedImage convertToBufferedImage(java.awt.Image image)
+    {
+        BufferedImage newImage = new BufferedImage(
+                image.getWidth(null), image.getHeight(null),
+                BufferedImage.TYPE_INT_ARGB);
+        Graphics2D g = newImage.createGraphics();
+        g.drawImage(image, 0, 0, null);
+        g.dispose();
+        return newImage;
     }
 
     @FXML
