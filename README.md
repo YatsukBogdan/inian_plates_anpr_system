@@ -1,4 +1,2 @@
-# inian_plates_anpr_system
-Java project
-
-This is project that take 
+# Indian plates ANPR system
+This is java project that can recognize indian plates number and write readed numbers to the database. 
